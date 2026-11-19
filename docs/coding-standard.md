@@ -6,8 +6,12 @@ are not part of this standard.
 
 smallcpp stays closer to C than to C++. A program does not use templates,
 references, `auto`, lambdas, operator overloads, or the standard template
-library. There is no `dict` type. Statements end with a semicolon. Source
-files use the `.scpp` suffix. Do not invent an `sc_` prefix for a name.
+library. There is no `dict` type. Statements end with a semicolon. A
+class definition goes in a header whose name ends in `.shpp`. The method
+bodies go in a `.scpp` file that is compiled and linked. Include the
+`.shpp` file. Do not include a `.scpp` file. A method written inside the
+class body is inline and stays in the header. Do not invent an `sc_`
+prefix for a name.
 
 ## General guidelines
 
