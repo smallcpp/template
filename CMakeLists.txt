@@ -1,6 +1,30 @@
 cmake_minimum_required(VERSION 3.16)
 project(template LANGUAGES NONE)
 
+# A fresh configuration installs to $HOME/opt/<project>. HOME is expanded
+# here, so the cache holds an absolute path. scripts/install can pass
+# another prefix for one run. On CMake 3.29 and newer, a new build
+# directory also takes CMAKE_INSTALL_PREFIX from the environment. A later
+# configure keeps the cached prefix.
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+   AND (CMAKE_VERSION VERSION_LESS 3.29
+        OR NOT DEFINED ENV{CMAKE_INSTALL_PREFIX}))
+    if("$ENV{HOME}" STREQUAL "")
+        message(FATAL_ERROR
+            "Cannot select the default install prefix: HOME is not set. "
+            "Set HOME to an absolute path.")
+    endif()
+    if(NOT IS_ABSOLUTE "$ENV{HOME}")
+        message(FATAL_ERROR
+            "Cannot select the default install prefix: HOME must be absolute "
+            "(got '$ENV{HOME}').")
+    endif()
+    get_filename_component(install_home "$ENV{HOME}" ABSOLUTE)
+    set(CMAKE_INSTALL_PREFIX "${install_home}/opt/${PROJECT_NAME}" CACHE PATH
+        "Install path prefix, prepended onto install directories." FORCE)
+    set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
+endif()
+
 # Binaries land next to the checkout, as they do for the compiler.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
@@ -45,5 +69,15 @@ add_custom_command(
     COMMENT "Compiling src/hello.scpp"
     VERBATIM)
 add_custom_target(hello ALL DEPENDS "${HELLO_PROGRAM}")
+
+# Copy the built application. This checkout is not the compiler, so the
+# install does not write a config file. LIBDIR is set first because this
+# project enables no language, and GNUInstallDirs warns otherwise.
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Object code libraries")
+endif()
+include(GNUInstallDirs)
+install(PROGRAMS "${HELLO_PROGRAM}"
+    DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 add_subdirectory(tests)

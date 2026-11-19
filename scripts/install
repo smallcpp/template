@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset -o pipefail
+
+usage() {
+    printf 'Usage: %s [prefix | --prefix prefix]\n' "$0" >&2
+    exit 2
+}
+
+prefix=""
+if [[ $# -gt 2 ]]; then
+    usage
+fi
+if [[ $# -eq 2 ]]; then
+    if [[ "$1" != "--prefix" ]]; then
+        usage
+    fi
+    prefix="$2"
+elif [[ $# -eq 1 ]]; then
+    case "$1" in
+        --prefix)
+            usage
+            ;;
+        -*)
+            printf 'Unknown argument: %s\n' "$1" >&2
+            usage
+            ;;
+        *)
+            prefix="$1"
+            ;;
+    esac
+fi
+
+if [[ -n "$prefix" && "$prefix" != /* ]]; then
+    printf 'Prefix must be an absolute path: %s\n' "$prefix" >&2
+    exit 2
+fi
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+build_dir="$project_root/build"
+
+if [[ ! -f "$build_dir/CMakeCache.txt" ]]; then
+    printf 'Build directory is not configured. Run scripts/setup first.\n' >&2
+    exit 1
+fi
+
+if ! cmake --build "$build_dir" --parallel 12; then
+    printf 'Build failed; nothing was installed.\n' >&2
+    exit 1
+fi
+
+install_args=(--install "$build_dir")
+if [[ -n "$prefix" ]]; then
+    install_args+=(--prefix "$prefix")
+fi
+if ! cmake "${install_args[@]}"; then
+    printf 'Install failed.\n' >&2
+    exit 1
+fi

@@ -2,7 +2,7 @@
 
 This directory holds the documents for the template.
 
-[hello.md](hello.md) is the reader document for `src/hello.scpp` and for the build.
+[hello.md](hello.md) is the reader document for `src/hello.scpp`, the build, and the install.
 
 [coding-standard.md](coding-standard.md) is the smallcpp coding standard.
 
