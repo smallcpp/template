@@ -1,0 +1,59 @@
+if [[ -r "$HOME/.bashrc" ]]; then
+    source "$HOME/.bashrc"
+fi
+
+export HISTCONTROL=ignoreboth:erasedups
+
+project_path="$_PROJECT_LOC/bin:$_PROJECT_LOC/scripts"
+if [[ -n "${HOME:-}" && -d "$HOME/opt/smallcpp/bin" ]]; then
+    project_path="$project_path:$HOME/opt/smallcpp/bin"
+fi
+export PATH="$project_path:$PATH"
+
+build() {
+    local dir="${_PROJECT_BUILD_DIR:-$_PROJECT_LOC/build}"
+    if (( $# )); then
+        cmake --build "$dir" --parallel 12 --target "$@"
+    else
+        cmake --build "$dir" --parallel 12
+    fi
+}
+
+rebuild() {
+    local dir="${_PROJECT_BUILD_DIR:-$_PROJECT_LOC/build}"
+    if (( $# )); then
+        cmake --build "$dir" --parallel 12 --clean-first --target "$@"
+    else
+        cmake --build "$dir" --parallel 12 --clean-first
+    fi
+}
+
+status() {
+    git -C "$_PROJECT_LOC" status "$@"
+}
+
+add() {
+    if (( $# )); then
+        git -C "$_PROJECT_LOC" add "$@"
+    else
+        git -C "$_PROJECT_LOC" add .
+    fi
+}
+
+commit() {
+    git -C "$_PROJECT_LOC" commit "$@"
+}
+
+push() {
+    git -C "$_PROJECT_LOC" push "$@"
+}
+
+all() {
+    git -C "$_PROJECT_LOC" add -A &&
+        git -C "$_PROJECT_LOC" commit "$@" &&
+        git -C "$_PROJECT_LOC" push
+}
+
+PS1="\[\e[0;31;1m\]${_PROJECT_NAME}(${_BUILD_TYPE}):\[\e[0m\]${PS1:-\\u@\\h:\\w\\$ }"
+cd -- "$_PROJECT_LOC/build"
+unset project_path
