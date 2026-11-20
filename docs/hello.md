@@ -12,7 +12,7 @@ hello, smallcpp
 
 Use `scripts/setup`, `build`, `build test`, `install`, and `scripts/clean`. Do not run `cmake` yourself for those actions. `install` builds the program and copies `bin/hello` into the prefix. The installed file is `bin/hello` under the prefix.
 
-`install` with no argument uses the prefix from configuration. A fresh configuration installs to `$HOME/opt/template`. `scripts/setup` expands `HOME` while it configures, so that prefix is absolute. The installed program is `$HOME/opt/template/bin/hello`. `install /absolute/path` and `install --prefix /absolute/path` install to that prefix for this run. A later `install` with no argument uses the configured prefix again. From the checkout root the same commands are `scripts/install` and `scripts/install /absolute/path`. A relative prefix is rejected.
+`install` with no argument uses the prefix from configuration. A fresh configuration installs to `$HOME/opt/smallcpp`. `scripts/setup` expands `HOME` while it configures, so that prefix is absolute. The installed program is `$HOME/opt/smallcpp/bin/hello`. `install /absolute/path` and `install --prefix /absolute/path` install to that prefix for this run. A later `install` with no argument uses the configured prefix again. From the checkout root the same commands are `scripts/install` and `scripts/install /absolute/path`. A relative prefix is rejected.
 
 `scpp` compiles the program. It has to be on `PATH`, or installed at `$HOME/opt/smallcpp`, so the program is `$HOME/opt/smallcpp/bin/scpp`. `scripts/setup` searches `PATH` first, then that `bin` directory.
 

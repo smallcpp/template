@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(template LANGUAGES NONE)
 
-# A fresh configuration installs to $HOME/opt/<project>. HOME is expanded
+# A fresh configuration installs to $HOME/opt/smallcpp. HOME is expanded
 # here, so the cache holds an absolute path. scripts/install can pass
 # another prefix for one run. On CMake 3.29 and newer, a new build
 # directory also takes CMAKE_INSTALL_PREFIX from the environment. A later
@@ -20,7 +20,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
             "(got '$ENV{HOME}').")
     endif()
     get_filename_component(install_home "$ENV{HOME}" ABSOLUTE)
-    set(CMAKE_INSTALL_PREFIX "${install_home}/opt/${PROJECT_NAME}" CACHE PATH
+    set(CMAKE_INSTALL_PREFIX "${install_home}/opt/smallcpp" CACHE PATH
         "Install path prefix, prepended onto install directories." FORCE)
     set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 endif()
